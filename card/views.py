@@ -27,11 +27,11 @@ class CreateCardView(APIView):
 @method_decorator(check_user_permissions, name="put")
 class UpdateCardView(APIView):
 
-    def put(self, request, id):
+    def put(self, request, card_id):
 
         req_data = request.data
 
-        card_obj = get_object_or_404(Card, id=id)
+        card_obj = get_object_or_404(Card, id=card_id)
 
         serializer = UpdateCardSerializer(instance=card_obj, data=req_data)
 
@@ -45,9 +45,9 @@ class UpdateCardView(APIView):
 @method_decorator(check_user_permissions, name="delete")
 class DeleteCardView(APIView):
 
-    def delete(self, request, id):
+    def delete(self, request, card_id):
         
-        instance = get_object_or_404(Card, id=id)
+        instance = get_object_or_404(Card, id=card_id)
 
         instance.delete()
 
@@ -61,9 +61,21 @@ class GetUserCardsView(APIView):
         
         card_list = get_list_or_404(Card, user__id=request.user.id)
 
-        print(card_list)
 
         serializer = CardSerializer(card_list, many=True)
 
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+
+
+class GetSingleCardView(APIView):
+    
+    
+    def get(self, request, card_id):
+
+        card = get_object_or_404(Card, id=card_id)
+
+        serializer = CardSerializer(card)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
